@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
-    id("com.dorongold.task-tree") version "1.5"
 }
 
 group = "ru.emkn"
