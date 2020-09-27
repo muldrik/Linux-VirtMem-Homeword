@@ -22,7 +22,27 @@ fun calculateFifo(input: List<Int>, ram: Int, pages: Int) {
 }
 
 fun calculateLru(input: List<Int>, ram: Int, pages: Int) {
-
+    val set = sortedSetOf<Int>()
+    val inRam = Array<Boolean>(pages) {false}
+    val lastUsed = Array<Int>(pages) {0}
+    var countReplacements = 0
+    for ((index, page) in input.withIndex()) {
+        if (!inRam[page]) {
+            if (set.size == pages) {
+                val lastUsedPage = set.first()
+                set.remove(set.first())
+                inRam[input[lastUsedPage]] = false
+                set.add(index)
+                inRam[page] = true
+                countReplacements++
+            }
+        }
+        else{
+            set.remove(lastUsed[page])
+            set.add(index)
+        }
+        lastUsed[page] = index
+    }
 }
 
 class ProgramArgs(args: Array<String>) {
@@ -57,7 +77,6 @@ fun handleOutput(){
 fun main(args: Array<String>) {
     //val a: List<Int> = s.split(' ').map { it.toInt() }
     //val argParser = ProgramArgs(args)
-    //val input = parseInput(argParser.inputFile)
-    val test = strToIntList(" ")
-    print(test)
+    //xval input = parseInput(argParser.inputFile)
+    val set2 = sortedSetOf<Int>()
 }
