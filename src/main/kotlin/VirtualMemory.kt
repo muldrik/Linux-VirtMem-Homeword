@@ -1,7 +1,5 @@
 import java.io.File
 import kotlin.IllegalArgumentException
-import java.util.Queue
-import java.util.LinkedList
 
 data class AlgoComparison(val fifoResult: QueryAnswer, val lruResult: QueryAnswer, val optResult: QueryAnswer)
 
@@ -46,16 +44,14 @@ fun parseInput(fileName: String) : List<QueryInput> {
     return processedInput
 }
 
-fun printAlgoResult(algoResult: QueryAnswer) {
-    println(algoResult.operations.joinToString(separator = " "))
-    println(algoResult.replacements)
-}
-
-fun handleOutput(algoComparisons: List<AlgoComparison>){
+fun handleOutput(algoComparisons: List<AlgoComparison>, sArg: Boolean){
     for (comparison in algoComparisons) {
-        printAlgoResult(comparison.fifoResult)
-        printAlgoResult(comparison.lruResult)
-        printAlgoResult(comparison.optResult)
+        if (!sArg) {
+            println(comparison.fifoResult.operations.joinToString(separator = " "))
+            println(comparison.lruResult.operations.joinToString(separator = " "))
+            println(comparison.optResult.operations.joinToString(separator = " "))
+        }
+        println("${comparison.fifoResult.replacements} ${comparison.lruResult.replacements} ${comparison.optResult.replacements}")
     }
 }
 
@@ -69,13 +65,12 @@ class ProgramArgs(args: Array<String>) {
     }
 
     val inputFile = args[0]
-    val fArg = args.indexOf("-f")
-    val fFile = if (fArg > -1) args[fArg + 1] else ""
+    val sArg: Boolean = args.contains("-s")
 }
 
 fun main(args: Array<String>) {
     val programArgs = ProgramArgs(args)
     val input = parseInput(programArgs.inputFile)
     val output = processPackage(input)
-    handleOutput(output)
+    handleOutput(output, programArgs.sArg)
 }

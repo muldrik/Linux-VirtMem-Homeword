@@ -1,4 +1,5 @@
-import java.util.*
+import java.util.Queue
+import java.util.LinkedList
 
 data class QueryAnswer(val operations: List<Int>, val replacements: Int)
 
