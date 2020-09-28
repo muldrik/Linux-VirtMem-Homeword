@@ -48,7 +48,7 @@ fun strToIntList(string: String): List<Int> {
 fun parseInput(fileName: String) : List<QueryInput> {
     val rawInput: List<String> = File(fileName).readLines()
     val processedInput = mutableListOf<QueryInput>()
-    if (rawInput.size % 2 != 0) throw IllegalArgumentException("Incorrect input format")
+    if (rawInput.size % 2 != 0) throw IllegalArgumentException("Incorrect input format") // Every input query is 2 lines
     var index = 0
     while (index<rawInput.size) {
         val memoryParams = strToIntList(rawInput[index])
@@ -82,6 +82,7 @@ fun handleOutput(algoComparisons: List<AlgoComparison>, sArg: Boolean){
 class ProgramArgs(args: Array<String>) {
     private fun validateArgs(args: Array<String>) {
         if (args.isEmpty()) throw IllegalArgumentException("Input file expected")
+        if (!File(args[0]).exists()) throw IllegalArgumentException("Input file not found")
     }
 
     init {
