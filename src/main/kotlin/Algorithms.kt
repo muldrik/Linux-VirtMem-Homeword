@@ -1,44 +1,58 @@
 import java.util.Queue
 import java.util.LinkedList
 
+/**
+ * The result of an algorithm - sequence of operations and number of replacements
+ */
 data class QueryAnswer(val operations: List<Int>, val replacements: Int)
 
+/**
+ * Calculate First In First Out
+ * N = input.size
+ * Time: O(N)
+ * Space: O(N)
+ */
 fun calculateFifo(input: List<Int>, ramSize: Int, pages: Int): QueryAnswer {
-    //TODO: compare queue implementations
     val requests = input.size
     val operations = MutableList(requests) {-1}
-    val queue: Queue<Int> = LinkedList()
-    val inRam = Array<Boolean>(pages+1) {false}
+    val elementsInRam: Queue<Int> = LinkedList() // Elements currently in RAM
+    val isInRam = Array<Boolean>(pages+1) {false} // To quickly check if an element is in ram
     var countReplacements = 0
     for ((index, page) in input.withIndex()) {
-        if (!inRam[page]) {
-            if (queue.size == ramSize) {
-                val firstIn = queue.remove()
-                inRam[firstIn] = false
+        if (!isInRam[page]) {
+            if (elementsInRam.size == ramSize) { // If a replacement is required, remove First In element
+                val firstIn = elementsInRam.remove()
+                isInRam[firstIn] = false
                 operations[index] = firstIn
                 countReplacements++
             }
-            queue.add(page)
-            inRam[page] = true
+            elementsInRam.add(page)
+            isInRam[page] = true
         }
     }
     return QueryAnswer(operations, countReplacements)
 }
 
+/**
+ * Calculate Least Recently Used
+ * N = input.size
+ * Time: O(N*log(N))
+ * Space: O(N)
+ */
 fun calculateLru(input: List<Int>, ramSize: Int, pages: Int): QueryAnswer {
     val requests = input.size
     val operations = MutableList(requests) {-1}
-    val set = sortedSetOf<Int>()
-    val isInRam = Array<Boolean>(pages+1) {false}
-    val lastUsed = Array<Int>(pages+1) {0}
+    val set = sortedSetOf<Int>() // Page numbers of unique pages that are in Ram sorted by time of last use
+    val isInRam = Array<Boolean>(pages+1) {false} // To quickly check if an element is in ram
+    val lastUsed = Array<Int>(pages+1) {0} // When was a page last accessed
     var countReplacements = 0
     for ((index, page) in input.withIndex()) {
         if (!isInRam[page]) {
-            if (set.size == ramSize) {
-                val lastUsedPage = set.first()
+            if (set.size == ramSize) { // If a replacement is required, replace the least recently used page
+                val lastUsedPageIndex = set.first()
                 set.remove(set.first())
-                isInRam[input[lastUsedPage]] = false
-                operations[index] = input[lastUsedPage]
+                isInRam[input[lastUsedPageIndex]] = false
+                operations[index] = input[lastUsedPageIndex]
                 countReplacements++
             }
             isInRam[page] = true
@@ -52,6 +66,10 @@ fun calculateLru(input: List<Int>, ramSize: Int, pages: Int): QueryAnswer {
     return QueryAnswer(operations, countReplacements)
 }
 
+/**
+ * Pair of the page and the next time it will be used
+ * Supports sorting in descending order by nextUse, if equal - ascending order by page
+ */
 data class NextUsagePage(val nextUse: Int, val page: Int): Comparable<NextUsagePage> {
     override fun compareTo(other: NextUsagePage): Int {
         val result = other.nextUse.compareTo(nextUse) // Compare to sort in descending order
@@ -59,36 +77,43 @@ data class NextUsagePage(val nextUse: Int, val page: Int): Comparable<NextUsageP
     }
 }
 
+/**
+ * Calculate Optimal algorithm
+ * N = input.size
+ * Time: O(N*log(N))
+ * Space: O(N)
+ */
 fun calculateOpt(input: List<Int>, ramSize: Int, pages: Int): QueryAnswer {
     val requests = input.size
     val operations = MutableList(requests) {-1}
-    val set = sortedSetOf<NextUsagePage>()
-    val inRam = Array<Boolean>(pages+1) {false}
+    val inRamNextUse = sortedSetOf<NextUsagePage>() // Pages that are in ram and their nextUse, sorted by nextUse
+    val isInRam = Array<Boolean>(pages+1) {false} // To quickly check if an element is in ram
     var cntInRam = 0
-    val nextRequests = List<Queue<Int>>(pages+1){ LinkedList() }
+    val nextRequests = List<Queue<Int>>(pages+1){ LinkedList() } // For each element all future requests to it
     for ((index, page) in input.withIndex()) {
         nextRequests[page].add(index)
     }
     val neverUsedAgain = requests+1
     for (pageNumber in 1..pages) {
-        nextRequests[pageNumber].add(neverUsedAgain)
-        nextRequests[pageNumber].remove()
+        nextRequests[pageNumber].add(neverUsedAgain) // All elements are assumed to have "never again" access time
+        nextRequests[pageNumber].remove() // First request to every elements is not considered
     }
     var countReplacements = 0
     for ((index, page) in input.withIndex()) {
-        if (!inRam[page]) {
-            if (cntInRam == ramSize) {
-                val latestUsedPage = set.first()
-                set.remove(set.first())
-                inRam[latestUsedPage.page] = false
+        if (!isInRam[page]) {
+            if (cntInRam == ramSize) { // If a replacement is required, replace an element that will be used latest
+                val latestUsedPage = inRamNextUse.first()
+                inRamNextUse.remove(inRamNextUse.first())
+                isInRam[latestUsedPage.page] = false
                 operations[index] = latestUsedPage.page
                 countReplacements++
             }
             else cntInRam++
-            inRam[page] = true
+            isInRam[page] = true
         }
-        else set.remove(NextUsagePage(index, page))
-        set.add(NextUsagePage(nextRequests[page].remove(), page))
+        // If the accessed element was already in ram, update it's "next access time"
+        else inRamNextUse.remove(NextUsagePage(index, page))
+        inRamNextUse.add(NextUsagePage(nextRequests[page].remove(), page))
     }
     return QueryAnswer(operations, countReplacements)
 }

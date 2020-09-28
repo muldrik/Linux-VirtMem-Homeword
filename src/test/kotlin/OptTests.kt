@@ -23,8 +23,4 @@ class OptTests {
         assertEquals(QueryAnswer(expected3, 3), calculateOpt(input3, 3, 6))
     }
 
-    @Test
-    fun `illegal argument test`() {
-
-    }
 }

@@ -21,9 +21,4 @@ class LruTests {
         val expected3 = listOf<Int>(-1, -1, -1, -1, 2, 3, 1)
         assertEquals(QueryAnswer(expected3, 3), calculateLru(input3, 3, 6))
     }
-
-    @Test
-    fun `illegal argument test`() {
-
-    }
 }

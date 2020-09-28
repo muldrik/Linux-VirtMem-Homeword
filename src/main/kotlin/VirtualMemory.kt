@@ -1,10 +1,19 @@
 import java.io.File
 import kotlin.IllegalArgumentException
 
+/**
+ * Results of all algorithms on a single query
+ */
 data class AlgoComparison(val fifoResult: QueryAnswer, val lruResult: QueryAnswer, val optResult: QueryAnswer)
 
+/**
+ * A single query to be processed by algorithms
+ */
 data class QueryInput(val pages: Int, val ramSize: Int, val inputSequence: List<Int>)
 
+/**
+ * Combine algorithms results
+ */
 fun compareAlgorithms(input: QueryInput): AlgoComparison {
     val fifoResult = calculateFifo(input.inputSequence, input.ramSize, input.pages)
     val lruResult = calculateLru(input.inputSequence, input.ramSize, input.pages)
@@ -12,6 +21,9 @@ fun compareAlgorithms(input: QueryInput): AlgoComparison {
     return AlgoComparison(fifoResult, lruResult, optResult)
 }
 
+/**
+ * Apply algorithms to all queries
+ */
 fun processPackage(queries: List<QueryInput>): List<AlgoComparison> {
     val algoComparisons = mutableListOf<AlgoComparison>()
     for (query in queries) {
@@ -20,6 +32,9 @@ fun processPackage(queries: List<QueryInput>): List<AlgoComparison> {
     return algoComparisons
 }
 
+/**
+ * Split a string by spaces to a list of Integers
+ */
 fun strToIntList(string: String): List<Int> {
     if (string.isEmpty()) throw IllegalArgumentException("Input cannot be empty")
     return string.split(' ').map {
@@ -27,6 +42,9 @@ fun strToIntList(string: String): List<Int> {
     }
 }
 
+/**
+ * Parse input file into a list of queries ready to be processed
+ */
 fun parseInput(fileName: String) : List<QueryInput> {
     val rawInput: List<String> = File(fileName).readLines()
     val processedInput = mutableListOf<QueryInput>()
@@ -44,6 +62,9 @@ fun parseInput(fileName: String) : List<QueryInput> {
     return processedInput
 }
 
+/**
+ * Output the result
+ */
 fun handleOutput(algoComparisons: List<AlgoComparison>, sArg: Boolean){
     for (comparison in algoComparisons) {
         if (!sArg) {
@@ -55,6 +76,9 @@ fun handleOutput(algoComparisons: List<AlgoComparison>, sArg: Boolean){
     }
 }
 
+/**
+ * Handle program arguments
+ */
 class ProgramArgs(args: Array<String>) {
     private fun validateArgs(args: Array<String>) {
         if (args.isEmpty()) throw IllegalArgumentException("Input file expected")
@@ -68,6 +92,9 @@ class ProgramArgs(args: Array<String>) {
     val sArg: Boolean = args.contains("-s")
 }
 
+/**
+ * Compare algorithms on multiple queries
+ */
 fun main(args: Array<String>) {
     val programArgs = ProgramArgs(args)
     val input = parseInput(programArgs.inputFile)
