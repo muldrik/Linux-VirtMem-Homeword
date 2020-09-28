@@ -13,5 +13,4 @@ class FifoTests {
         val expected1 = listOf<Int>(-1, -1, -1, 1, 2, 3, 4, 5)
         assertEquals(QueryAnswer(expected1, 5), calculateFifo(input1, 3, 5))
     }
-
 }
