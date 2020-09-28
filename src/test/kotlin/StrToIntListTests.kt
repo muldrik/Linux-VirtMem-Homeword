@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.*
-import java.io.File
 import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -9,12 +8,12 @@ import kotlin.test.assertFailsWith
  */
 class StrToIntListTests {
     @Test
-    fun `simple test`(){
+    fun `simple test`() {
         assertEquals(listOf(1, 2, 3), strToIntList("1 2 3"))
     }
 
     @Test
-    fun `illegal argument test`(){
+    fun `illegal argument test`() {
         assertFailsWith(IllegalArgumentException::class){
             strToIntList("")
         }
