@@ -10,15 +10,15 @@ class LruTests {
     @Test
     fun `simple test`() {
         val input1 = listOf<Int>(1, 2, 3, 4, 5, 1, 2, 3)
-        val expected1 = listOf<Int>(-1, -1, -1, 1, 2, 3, 4, 5)
-        assertEquals(QueryAnswer(expected1, 5), calculateLru(input1, 3, 5))
+        val expected1 = listOf<Int>(1, 2, 3, 1, 2, 3, 1, 2)
+        assertEquals(QueryAnswer(expected1, 8), calculateLru(input1, 3, 5))
 
         val input2 = listOf<Int>(1, 1, 1, 2, 2, 2, 1, 1, 1)
-        val expected2 = listOf<Int>(-1, -1, -1, 1, -1, -1, 2, -1, -1)
-        assertEquals(QueryAnswer(expected2, 2), calculateLru(input2, 1, 2))
+        val expected2 = listOf<Int>(1, -1, -1, 1, -1, -1, 1, -1, -1)
+        assertEquals(QueryAnswer(expected2, 3), calculateLru(input2, 1, 2))
 2
         val input3 = listOf<Int>(1, 2, 3, 1, 4, 5, 6)
-        val expected3 = listOf<Int>(-1, -1, -1, -1, 2, 3, 1)
-        assertEquals(QueryAnswer(expected3, 3), calculateLru(input3, 3, 6))
+        val expected3 = listOf<Int>(1, 2, 3, -1, 2, 3, 1)
+        assertEquals(QueryAnswer(expected3, 6), calculateLru(input3, 3, 6))
     }
 }
