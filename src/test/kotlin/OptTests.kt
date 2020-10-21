@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.*
 import java.lang.IllegalArgumentException
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -9,7 +10,6 @@ import kotlin.test.assertFailsWith
 class OptTests {
     @Test
     fun `simple test`() {
-
         val input1 = listOf<Int>(1, 2, 3, 4, 5, 1, 2, 3)
         val expected1 = listOf<Int>(1, 2, 3, 3, 3, -1, -1, 1)
         assertEquals(QueryAnswer(expected1, 6), calculateOpt(input1, 3, 5))
@@ -23,4 +23,13 @@ class OptTests {
         assertEquals(QueryAnswer(expected3, 6), calculateOpt(input3, 3, 6))
     }
 
+    @Test
+    fun `timeout test`() {
+        val result = assertTimeoutPreemptively(Duration.ofSeconds(3)) {
+            val queries = parseInput("src/test/resources/example_1.in")
+            for (query in queries) {
+                calculateOpt(query.inputSequence, query.ramSize, query.pages)
+            }
+        }
+    }
 }

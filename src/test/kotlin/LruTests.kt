@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.*
 import java.lang.IllegalArgumentException
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -20,5 +21,15 @@ class LruTests {
         val input3 = listOf<Int>(1, 2, 3, 1, 4, 5, 6)
         val expected3 = listOf<Int>(1, 2, 3, -1, 2, 3, 1)
         assertEquals(QueryAnswer(expected3, 6), calculateLru(input3, 3, 6))
+    }
+
+    @Test
+    fun `timeout test`() {
+        val result = assertTimeoutPreemptively(Duration.ofSeconds(3)) {
+            val queries = parseInput("src/test/resources/example_1.in")
+            for (query in queries) {
+                calculateLru(query.inputSequence, query.ramSize, query.pages)
+            }
+        }
     }
 }
